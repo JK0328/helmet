@@ -5,7 +5,7 @@
     <el-button typle="primary">查询</el-button>
   </div>
   <div>
-    <el-table :data="tableData" height=100vh style="width: 100%" :row-class-name="tableRowClassName">
+    <el-table :data="tableData" height=88vh style="width: 100%" :row-class-name="tableRowClassName">
       <el-table-column
           prop="date"
           label="日期"
@@ -41,17 +41,16 @@
       </el-table-column>
     </el-table>
   </div>
-    <div class="block">
-      
+  <div class="pagination-container">
       <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="currentPage4"
-          :page-sizes="[100, 200, 300, 400]"
-          :page-size="100"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="400">
-      </el-pagination>
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-sizes="[10, 20, 30, 40]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="totalItems"
+      ></el-pagination>
     </div>
   </div>
 </template>
@@ -59,8 +58,59 @@
 
 
 <style>
+.app-container {
+  position: relative;
+  height: 100vh;
+}
+
+.el-table-container {
+  height: calc(100vh - 60px); /* 确保表格高度留出翻页器的空间 */
+  overflow-y: auto;
+}
+
+.pagination-container {
+  position: fixed;
+  bottom: 0;
+  left: 200px;
+  right: 0;
+  background: #fff;
+  padding: 10px;
+  text-align: center;
+  box-shadow: 0 -2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.el-pagination {
+  margin-left: -3px;
+  margin-right: -3px;
+  margin-top: 5px;
+}
+
+.el-pagination__total {
+  margin-right: 10px;
+}
+
+.pagination-ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.pagination-ul li {
+  display: inline-block;
+  margin: 0 5px;
+}
+
+.pagination-ul li a {
+  text-decoration: none;
+  color: #409EFF;
+}
+
+.pagination-ul li.disabled a {
+  color: #c0c4cc;
+  cursor: not-allowed;
+}
 .el-table .warning-row {
-  background: #f6e6e3;
+  background: #f6e6e3; 
 }
 
 </style>
@@ -68,9 +118,8 @@
 <script>
 export default {
   methods: {
-    tableRowClassName({row, rowIndex}) {
-      if (rowIndex === 1 ) {
-      // if( tableData.violation === '否') {
+    tableRowClassName({row}) {
+      if( row.violation === '否') {
         return 'warning-row';
       }
       return '';
@@ -223,6 +272,27 @@ export default {
           violation:'是',
           address: '长沙市岳麓区麓山南路'
         }]
+    }
+  },
+  methods: {
+    tableRowClassName({ row }) {
+      if (row.violation === '否') {
+        return 'warning-row';
+      }
+      return '';
+    },
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+      this.pageSize = val;
+      this.fetchData();
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.currentPage = val;
+      this.fetchData();
+    },
+    fetchData() {
+      // 这里可以添加获取数据的逻辑，根据 currentPage 和 pageSize 来获取数据
     }
   }
 }
